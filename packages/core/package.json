@@ -17,6 +17,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@tombcato/ai-selector-core": "^0.1.11",
     "zod": "^3.22.0"
   },
   "devDependencies": {

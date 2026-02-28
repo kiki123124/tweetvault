@@ -29,4 +29,4 @@ export interface AIClassifier {
   ): Promise<ClassificationResult>;
 }
 
-export type AIProvider = "claude" | "openai" | "ollama";
+export type AIProvider = "claude" | "openai" | "ollama" | string;
