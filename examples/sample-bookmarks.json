@@ -1,0 +1,55 @@
+[
+  {
+    "id": "1234567890",
+    "text": "Just released v2.0 of our open source AI framework! Now supports streaming, tool use, and multi-modal inputs. Check it out on GitHub.",
+    "authorName": "Sarah Chen",
+    "authorHandle": "sarahchen_dev",
+    "createdAt": "2024-12-15T10:30:00Z",
+    "url": "https://x.com/sarahchen_dev/status/1234567890",
+    "media": [],
+    "metrics": { "likes": 2500, "retweets": 890, "replies": 45 }
+  },
+  {
+    "id": "1234567891",
+    "text": "The best productivity tip I've learned: time-block your deep work in the morning, meetings in the afternoon. Your brain will thank you.",
+    "authorName": "James Park",
+    "authorHandle": "jamespark",
+    "createdAt": "2024-12-14T08:15:00Z",
+    "url": "https://x.com/jamespark/status/1234567891",
+    "media": [],
+    "metrics": { "likes": 5200, "retweets": 1200, "replies": 89 }
+  },
+  {
+    "id": "1234567892",
+    "text": "New paper: We found that fine-tuning LLMs on domain-specific data with just 1000 examples can match GPT-4 performance on specialized tasks. Paper link in thread.",
+    "authorName": "Dr. Liu Wei",
+    "authorHandle": "liuwei_ml",
+    "createdAt": "2024-12-13T14:00:00Z",
+    "url": "https://x.com/liuwei_ml/status/1234567892",
+    "media": [{ "type": "photo", "url": "https://example.com/paper-chart.png", "altText": "Performance comparison chart" }],
+    "metrics": { "likes": 8900, "retweets": 3400, "replies": 156 }
+  },
+  {
+    "id": "1234567893",
+    "text": "Beautiful minimalist desk setup for 2025. Cable management is an art form. Here's my before/after.",
+    "authorName": "Design Daily",
+    "authorHandle": "designdaily",
+    "createdAt": "2024-12-12T16:45:00Z",
+    "url": "https://x.com/designdaily/status/1234567893",
+    "media": [
+      { "type": "photo", "url": "https://example.com/desk-before.jpg" },
+      { "type": "photo", "url": "https://example.com/desk-after.jpg" }
+    ],
+    "metrics": { "likes": 12000, "retweets": 2100, "replies": 230 }
+  },
+  {
+    "id": "1234567894",
+    "text": "Rust + WebAssembly is seriously underrated for building high-performance web apps. Here's a benchmark comparison with JavaScript for image processing.",
+    "authorName": "Alex Rust",
+    "authorHandle": "alexrust_dev",
+    "createdAt": "2024-12-11T11:20:00Z",
+    "url": "https://x.com/alexrust_dev/status/1234567894",
+    "media": [],
+    "metrics": { "likes": 3800, "retweets": 920, "replies": 67 }
+  }
+]
