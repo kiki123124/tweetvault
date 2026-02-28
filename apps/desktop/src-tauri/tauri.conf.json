@@ -14,13 +14,15 @@
     "windows": [
       {
         "title": "TweetVault",
-        "width": 520,
-        "height": 700,
+        "width": 480,
+        "height": 720,
         "resizable": true,
         "decorations": true,
         "center": true,
-        "minWidth": 420,
-        "minHeight": 500
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "minWidth": 400,
+        "minHeight": 600
       }
     ],
     "security": {

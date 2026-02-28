@@ -1,35 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #ffffff;
-  --bg-secondary: #f5f5f7;
-  --text: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --border: #d2d2d7;
-  --accent: #0071e3;
-  --accent-hover: #0077ed;
-  --success: #34c759;
+  --bg: #fafafa;
+  --bg-secondary: #f0f0f5;
+  --text: #1a1a2e;
+  --text-secondary: #8e8ea0;
+  --border: #e0e0e8;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --success: #10b981;
   --card: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1d1d1f;
-    --bg-secondary: #2d2d2f;
-    --text: #f5f5f7;
-    --text-secondary: #a1a1a6;
-    --border: #424245;
-    --accent: #2997ff;
-    --accent-hover: #64b5ff;
-    --success: #30d158;
-    --card: #2d2d2f;
+    --bg: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --text: #e8e8f0;
+    --text-secondary: #6e6e8a;
+    --border: #2a2a40;
+    --accent: #8b5cf6;
+    --accent-hover: #a78bfa;
+    --success: #34d399;
+    --card: #1a1a2e;
   }
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* Input focus */
+input:focus, textarea:focus {
+  border-color: var(--accent) !important;
+  outline: none;
+}
+
+/* Spinner animation */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
 }

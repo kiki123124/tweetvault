@@ -1,100 +1,98 @@
-# TweetVault
+# 🗃️ TweetVault
 
-Export your X (Twitter) bookmarks, auto-classify them with AI, and generate a structured [Obsidian](https://obsidian.md) knowledge base.
+> 把你 X (Twitter) 的书签坟场，变成有条理的 Obsidian 知识库 ✨
 
-> Turn your bookmark graveyard into a searchable, organized knowledge vault.
+一键导出 X 书签 → AI 智能分类 → 生成 [Obsidian](https://obsidian.md) 知识库，支持 20+ AI 模型。
 
-[English](#features) | [中文](#功能特性)
+[English](#-english) | [中文](#-功能)
 
 ---
 
-## Features
+## 🚀 功能
 
-- **Bookmark fetching** — Cookie-based auth (like yt-dlp) or JSON file import
-- **AI classification** — Auto-categorize into topic folders with tags and summaries
-- **20+ AI providers** — Claude, OpenAI, DeepSeek, Gemini, Ollama, OpenRouter, and more via [ai-selector](https://github.com/tombcato/ai-selector)
-- **Obsidian vault** — Markdown files with frontmatter, backlinks, and category indexes
-- **CLI first** — Scriptable, pipe-friendly commands
-- **macOS desktop app** — Native Tauri GUI with system dark/light mode
+- 📥 **书签导入** — Cookie 一键抓取（类似 yt-dlp）或 JSON 文件导入
+- 🤖 **AI 智能分类** — 自动按主题归类，生成标签和摘要
+- 🧠 **20+ AI 模型** — Claude / OpenAI / DeepSeek / Gemini / Ollama / OpenRouter 等，由 [ai-selector](https://github.com/tombcato/ai-selector) 驱动
+- 📝 **Obsidian 知识库** — Markdown + frontmatter + 双向链接 + 分类索引
+- 💻 **CLI + 桌面端** — 命令行可脚本化，Tauri 原生桌面端支持系统明暗模式
+- 🍎 **macOS 原生** — 轻量 Tauri 打包，非 Electron
 
-## Quick Start
+## ⚡ 快速开始
 
 ```bash
-# Clone and install
 git clone https://github.com/kiki123124/tweetvault.git
 cd tweetvault
 pnpm install && pnpm build
 
-# One-command pipeline: import JSON → AI classify → generate vault
+# 一键搞定：导入 → AI 分类 → 生成知识库
 node packages/cli/dist/index.js sync \
   --input bookmarks.json \
   --provider claude --api-key sk-ant-xxx \
   --output ./my-vault
 ```
 
-## Usage
+## 📖 使用方式
 
-### Full pipeline (recommended)
+### 一键同步（推荐）
 
 ```bash
 tweetvault sync --input bookmarks.json --provider openai --api-key sk-xxx --output ./vault
 ```
 
-### Step by step
+### 分步操作
 
 ```bash
-# 1. Fetch bookmarks (from JSON file)
-tweetvault fetch --input bookmarks.json --output bookmarks.json
-
-# 1. Or fetch directly from X (requires browser cookie)
+# 1️⃣ 获取书签
+tweetvault fetch --input bookmarks.json
+# 或直接从 X 抓取
 tweetvault fetch --cookie "ct0=xxx; auth_token=xxx" --limit 200
 
-# 2. Classify with AI
+# 2️⃣ AI 分类
 tweetvault classify --provider claude --api-key sk-ant-xxx
 
-# 3. Generate Obsidian vault
+# 3️⃣ 生成 Obsidian 知识库
 tweetvault generate --output ./my-vault --name "My TweetVault"
 ```
 
-### AI Providers
+## 🤖 支持的 AI 模型
 
-Powered by [ai-selector](https://github.com/tombcato/ai-selector), supporting 20+ AI providers out of the box:
+由 [ai-selector](https://github.com/tombcato/ai-selector) 提供统一接口，开箱支持：
 
-| Provider | Flag | Model (default) |
-|----------|------|-----------------|
+| 提供商 | 参数 | 默认模型 |
+|--------|------|----------|
 | Claude | `--provider claude` | claude-sonnet-4-5 |
 | OpenAI | `--provider openai` | gpt-4o-mini |
-| DeepSeek | `--provider deepseek` | deepseek-chat |
+| DeepSeek 🇨🇳 | `--provider deepseek` | deepseek-chat |
 | Gemini | `--provider gemini` | gemini-2.0-flash |
-| Ollama | `--provider ollama` | llama3.2 |
+| Ollama 🏠 | `--provider ollama` | llama3.2 |
 | OpenRouter | `--provider openrouter` | — |
 
-Also supports: Moonshot (Kimi), Qwen, Zhipu (GLM), SiliconFlow, Groq, Mistral, Together AI, Fireworks, xAI (Grok), Cohere, and more.
+> 还有 Moonshot (Kimi)、通义千问、智谱 GLM、SiliconFlow、Groq、Mistral、Together AI、xAI (Grok) 等 20+ 提供商
 
-For any OpenAI-compatible API, use `--base-url`:
+自定义 API 地址：
 ```bash
 tweetvault classify --provider openai --base-url https://your-api.com/v1 --api-key xxx
 ```
 
-## Output Structure
+## 📁 输出结构
 
 ```
 my-vault/
-├── _index.md                  # Vault overview
-├── Tech/
-│   ├── _index.md              # Category index with links
-│   ├── sarahchen_dev-123.md   # Individual bookmark
+├── 📋 _index.md              # 知识库总览
+├── 🤖 AI_ML/
+│   ├── _index.md              # 分类索引
+│   └── liuwei_ml-789.md       # 单条书签
+├── 💻 Tech/
+│   ├── sarahchen_dev-123.md
 │   └── alexrust_dev-456.md
-├── AI_ML/
-│   ├── _index.md
-│   └── liuwei_ml-789.md
-├── Productivity/
-│   └── jamespark-101.md
-└── Design/
-    └── designdaily-102.md
+├── 🎨 Design/
+│   └── designdaily-102.md
+└── 📈 Productivity/
+    └── jamespark-101.md
 ```
 
-Each bookmark file includes:
+每条书签长这样 👇
+
 ```markdown
 ---
 title: "Tweet by @username"
@@ -105,155 +103,30 @@ category: "Tech"
 tags: ["ai", "open-source", "framework"]
 ---
 
-> AI-generated summary of the tweet.
+> AI 生成的一句话摘要
 
-Original tweet content...
+原始推文内容...
 
-[View on X](https://x.com/username/status/123)
+[🔗 View on X](https://x.com/username/status/123)
 ```
 
-## Getting Your X Cookie
+## 🍪 获取 X Cookie
 
-1. Open [x.com](https://x.com) in your browser and log in
-2. Open DevTools (F12) → Network tab
-3. Refresh the page, click any request to x.com
-4. Copy the `Cookie` header value
-5. Use it with `--cookie "ct0=xxx; auth_token=xxx; ..."`
-
-## Configuration
-
-Save defaults to `~/.tweetvault/config.json`:
-
-```json
-{
-  "ai": {
-    "provider": "claude",
-    "apiKey": "sk-ant-xxx",
-    "model": "claude-sonnet-4-5-20250514"
-  },
-  "output": {
-    "dir": "./my-vault",
-    "includeMedia": true,
-    "createIndex": true,
-    "language": "en"
-  }
-}
-```
-
-## Project Structure
-
-```
-tweetvault/
-├── packages/core    # Fetching, AI classification, Obsidian generation
-├── packages/cli     # Command-line interface
-├── apps/desktop     # Tauri desktop app (WIP)
-└── examples/        # Sample data
-```
-
-## Roadmap
-
-- [x] CLI with fetch/classify/generate/sync commands
-- [x] 20+ AI providers via [ai-selector](https://github.com/tombcato/ai-selector) (Claude, OpenAI, DeepSeek, Gemini, Ollama, etc.)
-- [x] Cookie-based X bookmark fetching
-- [x] JSON file import
-- [x] Tauri macOS desktop app
-- [ ] Incremental sync (only process new bookmarks)
-- [ ] Browser extension for one-click export
-- [ ] Thread unrolling
-- [ ] Custom classification prompts
-
-## License
-
-MIT
-
----
-
-## 功能特性
-
-- **书签获取** — 通过 Cookie 认证（类似 yt-dlp）或导入 JSON 文件
-- **AI 智能分类** — 自动按主题归类到文件夹，生成标签和摘要
-- **20+ AI 模型** — 通过 [ai-selector](https://github.com/tombcato/ai-selector) 支持 Claude、OpenAI、DeepSeek、Gemini、Ollama、OpenRouter 等 20+ 提供商
-- **Obsidian 知识库** — 生成带 frontmatter、双向链接和分类索引的 Markdown 文件
-- **CLI 优先** — 可脚本化、支持管道的命令行工具
-- **macOS 桌面端** — 基于 Tauri 的原生 GUI，支持系统明暗模式
-
-## 快速开始
-
-```bash
-# 克隆并安装
-git clone https://github.com/kiki123124/tweetvault.git
-cd tweetvault
-pnpm install && pnpm build
-
-# 一键流水线：导入 JSON → AI 分类 → 生成 Obsidian 知识库
-node packages/cli/dist/index.js sync \
-  --input bookmarks.json \
-  --provider claude --api-key sk-ant-xxx \
-  --output ./my-vault
-```
-
-## 使用方式
-
-### 完整流水线（推荐）
-
-```bash
-tweetvault sync --input bookmarks.json --provider openai --api-key sk-xxx --output ./vault
-```
-
-### 分步执行
-
-```bash
-# 1. 获取书签（从 JSON 文件导入）
-tweetvault fetch --input bookmarks.json --output bookmarks.json
-
-# 1. 或直接从 X 抓取（需要浏览器 Cookie）
-tweetvault fetch --cookie "ct0=xxx; auth_token=xxx" --limit 200
-
-# 2. AI 分类
-tweetvault classify --provider claude --api-key sk-ant-xxx
-
-# 3. 生成 Obsidian 知识库
-tweetvault generate --output ./my-vault --name "My TweetVault"
-```
-
-### AI 模型支持
-
-通过 [ai-selector](https://github.com/tombcato/ai-selector) 开箱支持 20+ AI 提供商：
-
-| 模型 | 参数 | 默认模型 |
-|------|------|----------|
-| Claude | `--provider claude` | claude-sonnet-4-5 |
-| OpenAI | `--provider openai` | gpt-4o-mini |
-| DeepSeek | `--provider deepseek` | deepseek-chat |
-| Gemini | `--provider gemini` | gemini-2.0-flash |
-| Ollama | `--provider ollama` | llama3.2 |
-| OpenRouter | `--provider openrouter` | — |
-
-还支持：Moonshot (Kimi)、通义千问、智谱 (GLM)、SiliconFlow、Groq、Mistral、Together AI、xAI (Grok) 等。
-
-支持任何 OpenAI 兼容 API，使用 `--base-url` 指定：
-```bash
-tweetvault classify --provider openai --base-url https://your-api.com/v1 --api-key xxx
-```
-
-## 获取 X Cookie
-
-1. 在浏览器中打开 [x.com](https://x.com) 并登录
-2. 打开开发者工具（F12）→ 网络（Network）标签
-3. 刷新页面，点击任意 x.com 的请求
+1. 打开 [x.com](https://x.com) 并登录
+2. `F12` 打开开发者工具 → Network 标签
+3. 刷新页面，点击任意请求
 4. 复制 `Cookie` 请求头的值
-5. 使用 `--cookie "ct0=xxx; auth_token=xxx; ..."` 传入
+5. 用 `--cookie "ct0=xxx; auth_token=xxx; ..."` 传入
 
-## 配置文件
+## ⚙️ 配置文件
 
-默认配置保存在 `~/.tweetvault/config.json`：
+保存在 `~/.tweetvault/config.json`，省去每次输参数：
 
 ```json
 {
   "ai": {
     "provider": "claude",
-    "apiKey": "sk-ant-xxx",
-    "model": "claude-sonnet-4-5-20250514"
+    "apiKey": "sk-ant-xxx"
   },
   "output": {
     "dir": "./my-vault",
@@ -264,14 +137,85 @@ tweetvault classify --provider openai --base-url https://your-api.com/v1 --api-k
 }
 ```
 
-## 开发路线
+## 🏗️ 项目结构
 
-- [x] CLI 命令：fetch / classify / generate / sync
-- [x] 通过 ai-selector 支持 20+ AI 提供商
-- [x] Cookie 方式抓取 X 书签
-- [x] JSON 文件导入
-- [x] Tauri macOS 桌面端
-- [ ] 增量同步（只处理新书签）
-- [ ] 浏览器插件一键导出
-- [ ] 推文线程展开
-- [ ] 自定义分类 prompt
+```
+tweetvault/
+├── packages/core    # 核心：抓取、AI 分类、知识库生成
+├── packages/cli     # 命令行工具
+├── apps/desktop     # Tauri macOS 桌面端
+└── examples/        # 示例数据
+```
+
+## 🗺️ Roadmap
+
+- [x] ✅ CLI 四大命令：fetch / classify / generate / sync
+- [x] ✅ 20+ AI 提供商（via ai-selector）
+- [x] ✅ Cookie 抓取 X 书签
+- [x] ✅ JSON 文件导入
+- [x] ✅ Tauri macOS 桌面端
+- [ ] 🔄 增量同步（只处理新书签）
+- [ ] 🧩 浏览器插件一键导出
+- [ ] 🧵 推文线程自动展开
+- [ ] ✏️ 自定义分类 prompt
+- [ ] 📊 书签统计面板
+
+## 📄 License
+
+MIT
+
+---
+
+## 🌏 English
+
+### Features
+
+- 📥 **Bookmark fetching** — Cookie auth (like yt-dlp) or JSON import
+- 🤖 **AI classification** — Auto-categorize with tags and summaries
+- 🧠 **20+ AI providers** — Claude, OpenAI, DeepSeek, Gemini, Ollama, OpenRouter, and more via [ai-selector](https://github.com/tombcato/ai-selector)
+- 📝 **Obsidian vault** — Markdown + frontmatter + backlinks + category indexes
+- 💻 **CLI + Desktop** — Scriptable CLI and native Tauri desktop app with system dark/light mode
+- 🍎 **macOS native** — Lightweight Tauri, not Electron
+
+### Quick Start
+
+```bash
+git clone https://github.com/kiki123124/tweetvault.git
+cd tweetvault && pnpm install && pnpm build
+
+node packages/cli/dist/index.js sync \
+  --input bookmarks.json \
+  --provider claude --api-key sk-ant-xxx \
+  --output ./my-vault
+```
+
+### Supported AI Providers
+
+| Provider | Flag | Default Model |
+|----------|------|---------------|
+| Claude | `--provider claude` | claude-sonnet-4-5 |
+| OpenAI | `--provider openai` | gpt-4o-mini |
+| DeepSeek | `--provider deepseek` | deepseek-chat |
+| Gemini | `--provider gemini` | gemini-2.0-flash |
+| Ollama 🏠 | `--provider ollama` | llama3.2 |
+| OpenRouter | `--provider openrouter` | — |
+
+> Also supports: Moonshot, Qwen, Zhipu, SiliconFlow, Groq, Mistral, Together AI, xAI, Cohere, and more.
+
+### Getting Your X Cookie
+
+1. Open [x.com](https://x.com) and log in
+2. Open DevTools (`F12`) → Network tab
+3. Click any request, copy the `Cookie` header value
+4. Use `--cookie "ct0=xxx; auth_token=xxx"`
+
+### Roadmap
+
+- [x] CLI with fetch/classify/generate/sync
+- [x] 20+ AI providers via ai-selector
+- [x] Cookie-based bookmark fetching + JSON import
+- [x] Tauri macOS desktop app
+- [ ] Incremental sync
+- [ ] Browser extension
+- [ ] Thread unrolling
+- [ ] Custom classification prompts
