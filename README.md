@@ -4,6 +4,10 @@ Export your X (Twitter) bookmarks, auto-classify them with AI, and generate a st
 
 > Turn your bookmark graveyard into a searchable, organized knowledge vault.
 
+[English](#features) | [中文](#功能特性)
+
+---
+
 ## Features
 
 - **Bookmark fetching** — Cookie-based auth (like yt-dlp) or JSON file import
@@ -154,3 +158,106 @@ tweetvault/
 ## License
 
 MIT
+
+---
+
+## 功能特性
+
+- **书签获取** — 通过 Cookie 认证（类似 yt-dlp）或导入 JSON 文件
+- **AI 智能分类** — 自动按主题归类到文件夹，生成标签和摘要
+- **多模型支持** — Claude、OpenAI，或通过 Ollama 使用本地模型
+- **Obsidian 知识库** — 生成带 frontmatter、双向链接和分类索引的 Markdown 文件
+- **CLI 优先** — 可脚本化、支持管道的命令行工具
+- **macOS 桌面端** — 基于 Tauri 的 GUI（即将推出）
+
+## 快速开始
+
+```bash
+# 克隆并安装
+git clone https://github.com/kiki123124/tweetvault.git
+cd tweetvault
+pnpm install && pnpm build
+
+# 一键流水线：导入 JSON → AI 分类 → 生成 Obsidian 知识库
+node packages/cli/dist/index.js sync \
+  --input bookmarks.json \
+  --provider claude --api-key sk-ant-xxx \
+  --output ./my-vault
+```
+
+## 使用方式
+
+### 完整流水线（推荐）
+
+```bash
+tweetvault sync --input bookmarks.json --provider openai --api-key sk-xxx --output ./vault
+```
+
+### 分步执行
+
+```bash
+# 1. 获取书签（从 JSON 文件导入）
+tweetvault fetch --input bookmarks.json --output bookmarks.json
+
+# 1. 或直接从 X 抓取（需要浏览器 Cookie）
+tweetvault fetch --cookie "ct0=xxx; auth_token=xxx" --limit 200
+
+# 2. AI 分类
+tweetvault classify --provider claude --api-key sk-ant-xxx
+
+# 3. 生成 Obsidian 知识库
+tweetvault generate --output ./my-vault --name "My TweetVault"
+```
+
+### AI 模型支持
+
+| 模型 | 参数 | 默认模型 |
+|------|------|----------|
+| Claude | `--provider claude` | claude-sonnet-4-5 |
+| OpenAI | `--provider openai` | gpt-4o-mini |
+| Ollama | `--provider ollama` | llama3.2 |
+
+支持 OpenAI 兼容 API，使用 `--base-url` 指定：
+```bash
+tweetvault classify --provider openai --base-url https://your-api.com/v1 --api-key xxx
+```
+
+## 获取 X Cookie
+
+1. 在浏览器中打开 [x.com](https://x.com) 并登录
+2. 打开开发者工具（F12）→ 网络（Network）标签
+3. 刷新页面，点击任意 x.com 的请求
+4. 复制 `Cookie` 请求头的值
+5. 使用 `--cookie "ct0=xxx; auth_token=xxx; ..."` 传入
+
+## 配置文件
+
+默认配置保存在 `~/.tweetvault/config.json`：
+
+```json
+{
+  "ai": {
+    "provider": "claude",
+    "apiKey": "sk-ant-xxx",
+    "model": "claude-sonnet-4-5-20250514"
+  },
+  "output": {
+    "dir": "./my-vault",
+    "includeMedia": true,
+    "createIndex": true,
+    "language": "zh"
+  }
+}
+```
+
+## 开发路线
+
+- [x] CLI 命令：fetch / classify / generate / sync
+- [x] 支持 Claude、OpenAI、Ollama
+- [x] Cookie 方式抓取 X 书签
+- [x] JSON 文件导入
+- [ ] Tauri macOS 桌面端
+- [ ] 增量同步（只处理新书签）
+- [ ] 浏览器插件一键导出
+- [ ] 推文线程展开
+- [ ] 自定义分类 prompt
