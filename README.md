@@ -15,9 +15,23 @@
 - 🧠 **20+ AI 模型** — Claude / OpenAI / DeepSeek / Gemini / Ollama / OpenRouter 等，由 [ai-selector](https://github.com/tombcato/ai-selector) 驱动
 - 📝 **Obsidian 知识库** — Markdown + frontmatter + 双向链接 + 分类索引
 - 💻 **CLI + 桌面端** — 命令行可脚本化，Tauri 原生桌面端支持系统明暗模式
-- 🍎 **macOS 原生** — 轻量 Tauri 打包，非 Electron
+- 🍎 **macOS 原生** — 轻量 Tauri 打包（~10MB），非 Electron（200MB+）
+- 🔌 **零依赖运行** — 桌面端内置完整 pipeline，不需要 Node.js，打开就用
+- 🔄 **queryId 自动适配** — X 定期轮换 API 接口 ID，TweetVault 每次启动自动从 X 官网提取最新的，不怕失效
 
-## ⚡ 快速开始
+## 📦 桌面端安装
+
+从 [Releases](https://github.com/kiki123124/tweetvault/releases) 下载 DMG，拖到 Applications 即可。
+
+或者自己编译：
+```bash
+git clone https://github.com/kiki123124/tweetvault.git
+cd tweetvault && pnpm install
+cd apps/desktop && pnpm tauri build
+# 产物在 src-tauri/target/release/bundle/dmg/
+```
+
+## ⚡ 快速开始（CLI）
 
 ```bash
 git clone https://github.com/kiki123124/tweetvault.git
@@ -137,13 +151,38 @@ tags: ["ai", "open-source", "framework"]
 }
 ```
 
+## 🖥️ 桌面端架构
+
+桌面端是**完全独立**的原生应用，不依赖 Node.js：
+
+- **前端**（Solid.js + Tailwind）— 全部业务逻辑在浏览器里跑
+- **Tauri 插件**：
+  - `plugin-http` — 绕过 CORS 直接调 X API 和 AI API
+  - `plugin-fs` — 创建文件夹、写 Markdown 文件到本地磁盘
+  - `plugin-dialog` — 原生文件/文件夹选择器
+- **queryId 自动检测** — 启动时从 X 的 main.js 提取最新 Bookmarks queryId，X 轮换也不怕
+- **全局 fetch 劫持** — 用 Tauri 的 CORS-free fetch 替换 `window.fetch`，ai-selector-core 和 CookieFetcher 零修改直接工作
+
+```
+apps/desktop/
+├── src/
+│   ├── App.tsx              # UI（首页/指南/配置/进度/完成）
+│   ├── index.tsx            # 全局 fetch 替换（CORS bypass）
+│   └── lib/
+│       ├── sync.ts          # 完整 pipeline：获取→分类→生成
+│       └── query-id-resolver.ts  # X queryId 自动检测
+├── src-tauri/
+│   ├── src/lib.rs           # Rust：纯插件注册
+│   └── capabilities/        # 权限配置
+```
+
 ## 🏗️ 项目结构
 
 ```
 tweetvault/
-├── packages/core    # 核心：抓取、AI 分类、知识库生成
+├── packages/core    # 核心库（CLI 用）
 ├── packages/cli     # 命令行工具
-├── apps/desktop     # Tauri macOS 桌面端
+├── apps/desktop     # Tauri macOS 桌面端（独立运行）
 └── examples/        # 示例数据
 ```
 
@@ -168,10 +207,12 @@ tweetvault/
 
 ### ✨ 创新点
 
-- **ai-selector 统一接口** — 一套代码接 20+ AI，用户换模型只需改一个参数，不用改代码
-- **Cookie 直抓** — 像 yt-dlp 一样用浏览器 Cookie 直接调 X 内部 API，不需要开发者账号
+- **ai-selector 统一接口** — 一套代码接 20+ AI，用户换模型只需改一个参数
+- **Cookie 直抓** — 像 yt-dlp 一样用浏览器 Cookie 直接调 X 内部 GraphQL API，不需要开发者账号
+- **queryId 自动检测** — X 每隔几周轮换 API 的 queryId，TweetVault 每次启动自动从 X 官网提取，不会突然失效
 - **批量智能分类** — 一次发多条推文给 AI，上下文更丰富分类更准，还省 token
 - **Tauri 原生桌面** — 不到 10MB 的安装包（Electron 动辄 200MB+），跟随系统明暗模式
+- **零依赖运行** — 桌面端通过全局 fetch 劫持 + Tauri 插件，把完整 pipeline 跑在浏览器里，不需要 Node.js
 
 ## 🗺️ Roadmap
 
@@ -201,9 +242,11 @@ MIT
 - 🧠 **20+ AI providers** — Claude, OpenAI, DeepSeek, Gemini, Ollama, OpenRouter, and more via [ai-selector](https://github.com/tombcato/ai-selector)
 - 📝 **Obsidian vault** — Markdown + frontmatter + backlinks + category indexes
 - 💻 **CLI + Desktop** — Scriptable CLI and native Tauri desktop app with system dark/light mode
-- 🍎 **macOS native** — Lightweight Tauri, not Electron
+- 🍎 **macOS native** — Lightweight Tauri (~10MB), not Electron (200MB+)
+- 🔌 **Zero dependencies** — Desktop app runs the full pipeline in-browser, no Node.js needed
+- 🔄 **Auto queryId detection** — X rotates API IDs regularly, TweetVault auto-extracts the latest one on startup
 
-### Quick Start
+### Quick Start (CLI)
 
 ```bash
 git clone https://github.com/kiki123124/tweetvault.git
@@ -244,6 +287,8 @@ Your X bookmarks are a graveyard — hundreds of saved tweets you'll never find 
 - **Obsidian native** — frontmatter + `[[backlinks]]` + tags, drag into Obsidian and go
 - **Your model, your choice** — 20+ providers, run Ollama locally for free, data stays on your machine
 - **Batch classification** — sends multiple tweets per AI call for better context and fewer tokens
+- **Auto queryId** — X rotates GraphQL IDs every few weeks; TweetVault auto-detects the latest one
+- **Zero-dep desktop** — full pipeline runs in-browser via global fetch hijack + Tauri plugins, no Node.js
 
 ### Roadmap
 
