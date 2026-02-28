@@ -147,6 +147,32 @@ tweetvault/
 └── examples/        # 示例数据
 ```
 
+## 💡 为什么用 TweetVault？
+
+你的 X 书签可能有几百上千条，全堆在一个列表里根本找不到。TweetVault 做的事很简单：
+
+1. **AI 理解每条推文** — 不是简单的关键词匹配，而是让 AI 读懂内容，给出分类、标签和一句话摘要
+2. **自动建文件夹结构** — AI/ML、Tech、Design、Productivity... 每个分类一个文件夹，带索引页
+3. **Obsidian 原生格式** — frontmatter 元数据 + `[[双向链接]]` + 标签系统，直接拖进 Obsidian 就能用
+4. **你的模型你做主** — 20+ AI 模型随便选，用 Ollama 本地跑完全免费，数据不出你电脑
+
+### 🧠 知识库用法
+
+生成的 vault 拖进 Obsidian 后你可以：
+
+- **Graph View** 看知识图谱 — 哪些推文互相关联一目了然
+- **标签聚合** — 点 `#ai` 看所有 AI 相关的收藏，跨分类
+- **全文搜索** — Obsidian 的搜索比 X 原生强 100 倍
+- **二次加工** — 在推文旁边写笔记、链接到你自己的文档
+- **定期同步** — 每周跑一次 `tweetvault sync`，知识库持续增长
+
+### ✨ 创新点
+
+- **ai-selector 统一接口** — 一套代码接 20+ AI，用户换模型只需改一个参数，不用改代码
+- **Cookie 直抓** — 像 yt-dlp 一样用浏览器 Cookie 直接调 X 内部 API，不需要开发者账号
+- **批量智能分类** — 一次发多条推文给 AI，上下文更丰富分类更准，还省 token
+- **Tauri 原生桌面** — 不到 10MB 的安装包（Electron 动辄 200MB+），跟随系统明暗模式
+
 ## 🗺️ Roadmap
 
 - [x] ✅ CLI 四大命令：fetch / classify / generate / sync
@@ -208,6 +234,16 @@ node packages/cli/dist/index.js sync \
 2. Open DevTools (`F12`) → Network tab
 3. Click any request, copy the `Cookie` header value
 4. Use `--cookie "ct0=xxx; auth_token=xxx"`
+
+### 💡 Why TweetVault?
+
+Your X bookmarks are a graveyard — hundreds of saved tweets you'll never find again. TweetVault fixes this:
+
+- **AI reads your tweets** — not keyword matching, real understanding → categories, tags, summaries
+- **Auto folder structure** — AI/ML, Tech, Design… each category gets its own folder with index
+- **Obsidian native** — frontmatter + `[[backlinks]]` + tags, drag into Obsidian and go
+- **Your model, your choice** — 20+ providers, run Ollama locally for free, data stays on your machine
+- **Batch classification** — sends multiple tweets per AI call for better context and fewer tokens
 
 ### Roadmap
 

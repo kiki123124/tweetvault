@@ -1,7 +1,7 @@
 import { createSignal, Show, For, createMemo } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 
-type Step = "home" | "config" | "running" | "done";
+type Step = "home" | "guide" | "config" | "running" | "done";
 
 interface SyncResult {
   files_created: number;
@@ -136,12 +136,135 @@ export default function App() {
             </For>
           </div>
 
+          <div class="w-full max-w-xs space-y-2.5">
+            <button
+              class="w-full py-3.5 rounded-2xl text-[14px] font-medium transition-all active:scale-[0.98]"
+              style={{ background: "var(--accent)", color: "#fff" }}
+              onClick={() => setStep("config")}
+            >
+              开始配置
+            </button>
+            <button
+              class="w-full py-3 rounded-2xl text-[13px] transition-all active:scale-[0.98]"
+              style={{ background: "var(--bg-secondary)", color: "var(--text-secondary)" }}
+              onClick={() => setStep("guide")}
+            >
+              使用指南
+            </button>
+          </div>
+        </div>
+      </Show>
+
+      {/* === GUIDE === */}
+      <Show when={step() === "guide"}>
+        <div class="animate-fade-in px-7 py-3 pb-6 overflow-y-auto" style={{ "max-height": "calc(100vh - 48px)" }}>
+          <SectionLabel>工作流程</SectionLabel>
+          <Card>
+            <div class="space-y-4">
+              <For each={[
+                { num: "1", title: "准备书签数据", desc: "两种方式任选其一：" , details: [
+                  "方式 A：从浏览器复制 X 的 Cookie（F12 → Network → 复制 Cookie 请求头）",
+                  "方式 B：用其他工具导出书签为 JSON 文件，然后导入",
+                ]},
+                { num: "2", title: "选择 AI 模型", desc: "配置用于分类的 AI 提供商：", details: [
+                  "支持 Claude、OpenAI、DeepSeek、Gemini 等 20+ 提供商",
+                  "也支持 Ollama 本地模型，完全离线运行",
+                  "兼容任何 OpenAI 格式的 API（中转站、自建服务等）",
+                ]},
+                { num: "3", title: "一键同步", desc: "点击同步后自动完成：", details: [
+                  "获取并解析你的书签数据",
+                  "AI 分析每条书签的内容，自动归类并打标签",
+                  "按分类创建文件夹，每条书签生成一个 .md 文件",
+                ]},
+                { num: "4", title: "打开知识库", desc: "用 Obsidian 打开输出目录：", details: [
+                  "每个分类是一个文件夹（如 Tech/、AI/、Design/）",
+                  "文件包含原文、AI 摘要、标签和元数据",
+                  "支持 Obsidian 的双向链接、图谱视图和全文搜索",
+                ]},
+              ]}>
+                {(item) => (
+                  <div class="flex gap-3.5">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0"
+                      style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>
+                      {item.num}
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-[13px] font-medium mb-0.5">{item.title}</p>
+                      <p class="text-[11px] mb-1.5" style={{ color: "var(--text-secondary)" }}>{item.desc}</p>
+                      <For each={item.details}>
+                        {(d) => (
+                          <p class="text-[11px] leading-relaxed pl-2 border-l-2 mb-1"
+                            style={{ color: "var(--text-secondary)", "border-color": "var(--border)" }}>
+                            {d}
+                          </p>
+                        )}
+                      </For>
+                    </div>
+                  </div>
+                )}
+              </For>
+            </div>
+          </Card>
+
+          <SectionLabel>生成的文件格式</SectionLabel>
+          <Card>
+            <pre class="text-[11px] leading-relaxed overflow-x-auto" style={{ color: "var(--text-secondary)" }}>
+{`---
+title: "Tweet by @username"
+author: "@username"
+date: 2024-12-15
+url: https://x.com/...
+category: "Tech"
+tags: ["ai", "llm"]
+---
+
+> AI 生成的一句话摘要
+
+原始推文内容...
+
+[View on X](https://x.com/...)`}
+            </pre>
+          </Card>
+
+          <SectionLabel>知识库结构</SectionLabel>
+          <Card>
+            <pre class="text-[11px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+{`my-vault/
+├── _index.md       ← 总览
+├── Tech/
+│   ├── _index.md   ← 分类索引
+│   └── user-123.md
+├── AI_ML/
+│   └── user-456.md
+└── Design/
+    └── user-789.md`}
+            </pre>
+          </Card>
+
+          <SectionLabel>小贴士</SectionLabel>
+          <Card>
+            <div class="space-y-2.5 text-[12px]" style={{ color: "var(--text-secondary)" }}>
+              <p>• Cookie 有效期有限，过期后需要重新获取</p>
+              <p>• 书签较多时建议使用 DeepSeek 或 GPT-4o-mini，性价比高</p>
+              <p>• Ollama 完全免费离线运行，但分类质量依赖本地模型能力</p>
+              <p>• 自定义 API 地址可接入中转站，解决网络问题</p>
+              <p>• 多次同步同一目录不会覆盖，会追加新文件</p>
+            </div>
+          </Card>
+
           <button
-            class="w-full max-w-xs py-3.5 rounded-2xl text-[14px] font-medium transition-all active:scale-[0.98]"
+            class="w-full mt-5 py-3.5 rounded-2xl text-[14px] font-medium transition-all active:scale-[0.98]"
             style={{ background: "var(--accent)", color: "#fff" }}
             onClick={() => setStep("config")}
           >
             开始配置
+          </button>
+          <button
+            class="w-full mt-2 py-3 rounded-2xl text-[13px] transition-all active:scale-[0.98]"
+            style={{ background: "var(--bg-secondary)", color: "var(--text-secondary)" }}
+            onClick={() => setStep("home")}
+          >
+            返回
           </button>
         </div>
       </Show>
