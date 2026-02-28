@@ -1,13 +1,9 @@
 import { createSignal, Show, For, createMemo } from "solid-js";
-import { invoke } from "@tauri-apps/api/core";
+import { open as openDialog } from "@tauri-apps/plugin-dialog";
+import { homeDir, join } from "@tauri-apps/api/path";
+import { syncBookmarks, type SyncResult } from "./lib/sync";
 
 type Step = "home" | "guide" | "config" | "running" | "done";
-
-interface SyncResult {
-  files_created: number;
-  categories: string[];
-  output_dir: string;
-}
 
 const ALL_PROVIDERS = [
   { id: "claude", name: "Claude", org: "Anthropic", placeholder: "sk-ant-..." },
@@ -38,10 +34,14 @@ export default function App() {
   const [model, setModel] = createSignal("");
   const [inputPath, setInputPath] = createSignal("");
   const [cookie, setCookie] = createSignal("");
-  const [outputDir, setOutputDir] = createSignal("./tweetvault-output");
+  const [outputDir, setOutputDir] = createSignal("");
   const [error, setError] = createSignal("");
   const [result, setResult] = createSignal<SyncResult | null>(null);
   const [progressStep, setProgressStep] = createSignal(0);
+  const [progressDetail, setProgressDetail] = createSignal("");
+
+  // Set default output directory
+  homeDir().then((home) => join(home, "tweetvault-output")).then(setOutputDir).catch(() => {});
   const [drawerOpen, setDrawerOpen] = createSignal(false);
   const [searchQuery, setSearchQuery] = createSignal("");
   const [showAdvanced, setShowAdvanced] = createSignal(false);
@@ -64,25 +64,44 @@ export default function App() {
     return true;
   };
 
+  const pickJsonFile = async () => {
+    const selected = await openDialog({
+      filters: [{ name: "JSON", extensions: ["json"] }],
+      title: "选择书签 JSON 文件",
+    });
+    if (selected) setInputPath(selected as string);
+  };
+
+  const pickOutputDir = async () => {
+    const selected = await openDialog({
+      directory: true,
+      title: "选择输出目录",
+    });
+    if (selected) setOutputDir(selected as string);
+  };
+
   const handleSync = async () => {
     setError("");
     setStep("running");
     setProgressStep(1);
+    setProgressDetail("准备中...");
 
     try {
-      setProgressStep(2);
-      const res = await invoke<SyncResult>("sync_bookmarks", {
-        config: {
+      const res = await syncBookmarks(
+        {
           provider: provider(),
-          api_key: apiKey(),
-          base_url: baseUrl() || null,
-          model: model() || null,
-          input_path: inputPath() || null,
-          cookie: cookie() || null,
-          output_dir: outputDir(),
+          apiKey: apiKey(),
+          baseUrl: baseUrl() || undefined,
+          model: model() || undefined,
+          inputPath: inputPath() || undefined,
+          cookie: cookie() || undefined,
+          outputDir: outputDir(),
         },
-      });
-      setProgressStep(3);
+        (p) => {
+          setProgressStep(p.step);
+          setProgressDetail(p.detail);
+        },
+      );
       setResult(res);
       setStep("done");
     } catch (err) {
@@ -277,10 +296,21 @@ tags: ["ai", "llm"]
           <SectionLabel>数据源</SectionLabel>
           <Card>
             <FieldLabel>JSON 文件路径</FieldLabel>
-            <Field
-              value={inputPath()} onInput={setInputPath}
-              placeholder="拖入文件或输入路径"
-            />
+            <div class="flex gap-2">
+              <div class="flex-1">
+                <Field
+                  value={inputPath()} onInput={setInputPath}
+                  placeholder="选择文件或输入路径"
+                />
+              </div>
+              <button
+                class="px-3 rounded-xl text-[12px] border transition-all active:scale-[0.98]"
+                style={{ background: "var(--bg)", color: "var(--text-secondary)", "border-color": "var(--border)" }}
+                onClick={pickJsonFile}
+              >
+                选择
+              </button>
+            </div>
             <div class="flex items-center gap-3 my-3">
               <div class="flex-1 h-px" style={{ background: "var(--border)" }} />
               <span class="text-[11px]" style={{ color: "var(--text-tertiary)" }}>或</span>
@@ -363,10 +393,21 @@ tags: ["ai", "llm"]
           <SectionLabel>输出</SectionLabel>
           <Card>
             <FieldLabel>输出目录</FieldLabel>
-            <Field
-              value={outputDir()} onInput={setOutputDir}
-              placeholder="./tweetvault-output"
-            />
+            <div class="flex gap-2">
+              <div class="flex-1">
+                <Field
+                  value={outputDir()} onInput={setOutputDir}
+                  placeholder="~/tweetvault-output"
+                />
+              </div>
+              <button
+                class="px-3 rounded-xl text-[12px] border transition-all active:scale-[0.98]"
+                style={{ background: "var(--bg)", color: "var(--text-secondary)", "border-color": "var(--border)" }}
+                onClick={pickOutputDir}
+              >
+                选择
+              </button>
+            </div>
             <p class="text-[11px] mt-2 leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
               AI 会自动创建分类文件夹，每条书签生成一个 .md 文件。
               完成后用 Obsidian 打开此目录即可。
@@ -438,7 +479,7 @@ tags: ["ai", "llm"]
                       </p>
                       <Show when={active()}>
                         <p class="text-[11px] animate-pulse" style={{ color: "var(--text-tertiary)" }}>
-                          {item.sub}
+                          {progressDetail() || item.sub}
                         </p>
                       </Show>
                     </div>
@@ -465,8 +506,12 @@ tags: ["ai", "llm"]
           <Card class="w-full max-w-xs">
             <div class="space-y-3">
               <div class="flex justify-between">
+                <span class="text-[12px]" style={{ color: "var(--text-secondary)" }}>书签数</span>
+                <span class="text-[12px] font-medium">{result()!.bookmarkCount}</span>
+              </div>
+              <div class="flex justify-between">
                 <span class="text-[12px]" style={{ color: "var(--text-secondary)" }}>文件数</span>
-                <span class="text-[12px] font-medium">{result()!.files_created}</span>
+                <span class="text-[12px] font-medium">{result()!.filesCreated}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-[12px]" style={{ color: "var(--text-secondary)" }}>分类数</span>
@@ -474,7 +519,7 @@ tags: ["ai", "llm"]
               </div>
               <div class="flex justify-between">
                 <span class="text-[12px]" style={{ color: "var(--text-secondary)" }}>路径</span>
-                <span class="text-[12px] font-medium truncate max-w-[180px]">{result()!.output_dir}</span>
+                <span class="text-[12px] font-medium truncate max-w-[180px]">{result()!.outputDir}</span>
               </div>
               <div class="pt-2 border-t" style={{ "border-color": "var(--border)" }}>
                 <p class="text-[11px] mb-1.5" style={{ color: "var(--text-tertiary)" }}>分类</p>
