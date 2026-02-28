@@ -5,9 +5,6 @@ import type {
   FetchResult,
 } from "./types.js";
 
-const BOOKMARKS_API =
-  "https://x.com/i/api/graphql/bookmark_timeline";
-
 const FEATURES = {
   graphql_timeline_v2_bookmark_timeline: true,
   responsive_web_graphql_exclude_directive_enabled: true,
@@ -48,6 +45,7 @@ export class CookieFetcher implements BookmarkFetcher {
 
   async fetch(options?: FetchOptions): Promise<FetchResult> {
     const count = options?.limit ?? 20;
+    const queryId = "-LGfdImKeQz0xS_jjUwzlA";
     const variables: Record<string, unknown> = {
       count,
       includePromotedContent: false,
@@ -61,9 +59,6 @@ export class CookieFetcher implements BookmarkFetcher {
       features: JSON.stringify(FEATURES),
     });
 
-    // Find the correct query ID — this changes periodically.
-    // We try a known one first; if it fails, we'd need to scrape the main.js bundle.
-    const queryId = "yzqS_xGMfgBpMFU8_WFEJQ";
     const url = `https://x.com/i/api/graphql/${queryId}/Bookmarks?${params}`;
 
     const res = await fetch(url, {
@@ -74,6 +69,7 @@ export class CookieFetcher implements BookmarkFetcher {
         "x-twitter-active-user": "yes",
         "x-twitter-auth-type": "OAuth2Session",
         "content-type": "application/json",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       },
     });
 
@@ -89,12 +85,19 @@ export class CookieFetcher implements BookmarkFetcher {
   }
 
   private parseResponse(json: Record<string, unknown>): FetchResult {
-    const timeline = getNestedValue(json, [
+    // BookmarkSearchTimeline response path
+    const timeline = (getNestedValue(json, [
+      "data",
+      "search_by_raw_query",
+      "bookmarks_search_timeline",
+      "timeline",
+      "instructions",
+    ]) ?? getNestedValue(json, [
       "data",
       "bookmark_timeline_v2",
       "timeline",
       "instructions",
-    ]) as Array<Record<string, unknown>> | undefined;
+    ])) as Array<Record<string, unknown>> | undefined;
 
     if (!timeline) {
       return { bookmarks: [], hasMore: false };
@@ -151,6 +154,12 @@ export class CookieFetcher implements BookmarkFetcher {
 
     if (!legacy) return null;
 
+    // X API moved name/screen_name from legacy to core in 2025
+    const userCore = getNestedValue(core, [
+      "user_results",
+      "result",
+      "core",
+    ]) as Record<string, unknown> | undefined;
     const userLegacy = getNestedValue(core, [
       "user_results",
       "result",
@@ -158,15 +167,17 @@ export class CookieFetcher implements BookmarkFetcher {
     ]) as Record<string, unknown> | undefined;
 
     const restId = String(tweet.rest_id ?? "");
+    const screenName = String(userCore?.screen_name ?? userLegacy?.screen_name ?? "");
+    const name = String(userCore?.name ?? userLegacy?.name ?? "");
 
     return {
       id: restId,
       text: String(legacy.full_text ?? ""),
-      authorName: String(userLegacy?.name ?? ""),
-      authorHandle: String(userLegacy?.screen_name ?? ""),
+      authorName: name,
+      authorHandle: screenName,
       createdAt: String(legacy.created_at ?? ""),
-      url: userLegacy?.screen_name
-        ? `https://x.com/${userLegacy.screen_name}/status/${restId}`
+      url: screenName
+        ? `https://x.com/${screenName}/status/${restId}`
         : `https://x.com/i/status/${restId}`,
       media: this.parseMedia(legacy),
       metrics: {
