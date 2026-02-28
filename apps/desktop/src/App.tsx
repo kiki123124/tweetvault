@@ -16,6 +16,8 @@ export default function App() {
   const [inputPath, setInputPath] = createSignal("");
   const [cookie, setCookie] = createSignal("");
   const [outputDir, setOutputDir] = createSignal("./tweetvault-output");
+  const [baseUrl, setBaseUrl] = createSignal("");
+  const [model, setModel] = createSignal("");
   const [error, setError] = createSignal("");
   const [result, setResult] = createSignal<SyncResult | null>(null);
   const [progress, setProgress] = createSignal("");
@@ -36,6 +38,8 @@ export default function App() {
         config: {
           provider: provider(),
           api_key: apiKey(),
+          base_url: baseUrl() || null,
+          model: model() || null,
           input_path: inputPath() || null,
           cookie: cookie() || null,
           output_dir: outputDir(),
@@ -94,7 +98,7 @@ export default function App() {
             {/* AI Provider */}
             <Section title="AI Provider">
               <div class="grid grid-cols-3 gap-2 mb-3">
-                <For each={["claude", "openai", "ollama"]}>
+                <For each={["claude", "openai", "deepseek", "gemini", "ollama", "openrouter"]}>
                   {(p) => (
                     <button
                       class="py-2 px-3 rounded-lg text-sm font-medium transition-all border"
@@ -115,10 +119,27 @@ export default function App() {
                   label="API Key"
                   value={apiKey()}
                   onInput={setApiKey}
-                  placeholder={provider() === "claude" ? "sk-ant-..." : "sk-..."}
+                  placeholder={
+                    provider() === "claude" ? "sk-ant-..." :
+                    provider() === "deepseek" ? "sk-..." :
+                    provider() === "gemini" ? "AIza..." :
+                    "sk-..."
+                  }
                   type="password"
                 />
               </Show>
+              <Input
+                label="Custom Base URL (optional)"
+                value={baseUrl()}
+                onInput={setBaseUrl}
+                placeholder="Leave empty for default"
+              />
+              <Input
+                label="Model (optional)"
+                value={model()}
+                onInput={setModel}
+                placeholder="Leave empty for default"
+              />
             </Section>
 
             {/* Output */}

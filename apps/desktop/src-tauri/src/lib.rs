@@ -5,6 +5,8 @@ use std::process::Command;
 struct SyncConfig {
     provider: String,
     api_key: String,
+    base_url: Option<String>,
+    model: Option<String>,
     input_path: Option<String>,
     cookie: Option<String>,
     output_dir: String,
@@ -38,6 +40,16 @@ async fn sync_bookmarks(config: SyncConfig) -> Result<SyncResult, String> {
     if !config.api_key.is_empty() {
         args.push("--api-key".to_string());
         args.push(config.api_key);
+    }
+
+    if let Some(ref base_url) = config.base_url {
+        args.push("--base-url".to_string());
+        args.push(base_url.clone());
+    }
+
+    if let Some(ref model) = config.model {
+        args.push("--model".to_string());
+        args.push(model.clone());
     }
 
     args.push("--output".to_string());

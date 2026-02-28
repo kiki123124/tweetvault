@@ -12,10 +12,10 @@ Export your X (Twitter) bookmarks, auto-classify them with AI, and generate a st
 
 - **Bookmark fetching** — Cookie-based auth (like yt-dlp) or JSON file import
 - **AI classification** — Auto-categorize into topic folders with tags and summaries
-- **Multi-provider** — Claude, OpenAI, or local models via Ollama
+- **20+ AI providers** — Claude, OpenAI, DeepSeek, Gemini, Ollama, OpenRouter, and more via [ai-selector](https://github.com/tombcato/ai-selector)
 - **Obsidian vault** — Markdown files with frontmatter, backlinks, and category indexes
 - **CLI first** — Scriptable, pipe-friendly commands
-- **macOS desktop app** — Tauri-based GUI (coming soon)
+- **macOS desktop app** — Native Tauri GUI with system dark/light mode
 
 ## Quick Start
 
@@ -58,13 +58,20 @@ tweetvault generate --output ./my-vault --name "My TweetVault"
 
 ### AI Providers
 
+Powered by [ai-selector](https://github.com/tombcato/ai-selector), supporting 20+ AI providers out of the box:
+
 | Provider | Flag | Model (default) |
 |----------|------|-----------------|
 | Claude | `--provider claude` | claude-sonnet-4-5 |
 | OpenAI | `--provider openai` | gpt-4o-mini |
+| DeepSeek | `--provider deepseek` | deepseek-chat |
+| Gemini | `--provider gemini` | gemini-2.0-flash |
 | Ollama | `--provider ollama` | llama3.2 |
+| OpenRouter | `--provider openrouter` | — |
 
-For OpenAI-compatible APIs, use `--base-url`:
+Also supports: Moonshot (Kimi), Qwen, Zhipu (GLM), SiliconFlow, Groq, Mistral, Together AI, Fireworks, xAI (Grok), Cohere, and more.
+
+For any OpenAI-compatible API, use `--base-url`:
 ```bash
 tweetvault classify --provider openai --base-url https://your-api.com/v1 --api-key xxx
 ```
@@ -146,10 +153,10 @@ tweetvault/
 ## Roadmap
 
 - [x] CLI with fetch/classify/generate/sync commands
-- [x] Claude, OpenAI, Ollama support
+- [x] 20+ AI providers via [ai-selector](https://github.com/tombcato/ai-selector) (Claude, OpenAI, DeepSeek, Gemini, Ollama, etc.)
 - [x] Cookie-based X bookmark fetching
 - [x] JSON file import
-- [ ] Tauri macOS desktop app
+- [x] Tauri macOS desktop app
 - [ ] Incremental sync (only process new bookmarks)
 - [ ] Browser extension for one-click export
 - [ ] Thread unrolling
@@ -165,10 +172,10 @@ MIT
 
 - **书签获取** — 通过 Cookie 认证（类似 yt-dlp）或导入 JSON 文件
 - **AI 智能分类** — 自动按主题归类到文件夹，生成标签和摘要
-- **多模型支持** — Claude、OpenAI，或通过 Ollama 使用本地模型
+- **20+ AI 模型** — 通过 [ai-selector](https://github.com/tombcato/ai-selector) 支持 Claude、OpenAI、DeepSeek、Gemini、Ollama、OpenRouter 等 20+ 提供商
 - **Obsidian 知识库** — 生成带 frontmatter、双向链接和分类索引的 Markdown 文件
 - **CLI 优先** — 可脚本化、支持管道的命令行工具
-- **macOS 桌面端** — 基于 Tauri 的 GUI（即将推出）
+- **macOS 桌面端** — 基于 Tauri 的原生 GUI，支持系统明暗模式
 
 ## 快速开始
 
@@ -211,13 +218,20 @@ tweetvault generate --output ./my-vault --name "My TweetVault"
 
 ### AI 模型支持
 
+通过 [ai-selector](https://github.com/tombcato/ai-selector) 开箱支持 20+ AI 提供商：
+
 | 模型 | 参数 | 默认模型 |
 |------|------|----------|
 | Claude | `--provider claude` | claude-sonnet-4-5 |
 | OpenAI | `--provider openai` | gpt-4o-mini |
+| DeepSeek | `--provider deepseek` | deepseek-chat |
+| Gemini | `--provider gemini` | gemini-2.0-flash |
 | Ollama | `--provider ollama` | llama3.2 |
+| OpenRouter | `--provider openrouter` | — |
 
-支持 OpenAI 兼容 API，使用 `--base-url` 指定：
+还支持：Moonshot (Kimi)、通义千问、智谱 (GLM)、SiliconFlow、Groq、Mistral、Together AI、xAI (Grok) 等。
+
+支持任何 OpenAI 兼容 API，使用 `--base-url` 指定：
 ```bash
 tweetvault classify --provider openai --base-url https://your-api.com/v1 --api-key xxx
 ```
@@ -253,10 +267,10 @@ tweetvault classify --provider openai --base-url https://your-api.com/v1 --api-k
 ## 开发路线
 
 - [x] CLI 命令：fetch / classify / generate / sync
-- [x] 支持 Claude、OpenAI、Ollama
+- [x] 通过 ai-selector 支持 20+ AI 提供商
 - [x] Cookie 方式抓取 X 书签
 - [x] JSON 文件导入
-- [ ] Tauri macOS 桌面端
+- [x] Tauri macOS 桌面端
 - [ ] 增量同步（只处理新书签）
 - [ ] 浏览器插件一键导出
 - [ ] 推文线程展开
