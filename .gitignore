@@ -5,3 +5,8 @@ dist/
 .env
 .env.local
 target/
+
+# Tauri build outputs
+apps/desktop/src-tauri/target/
+apps/desktop/dist/
+apps/desktop/node_modules/
