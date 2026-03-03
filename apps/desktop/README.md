@@ -50,6 +50,15 @@ curl -sL https://raw.githubusercontent.com/kiki123124/x2o/main/apps/desktop/skil
 
 安装后重启 Claude Code，说"帮我导出 X 书签"即可触发。
 
+**OpenClaw 用户：**
+
+```bash
+# OpenClaw skills 目录
+mkdir -p ~/.openclaw/skills/x2o/scripts
+curl -sL https://raw.githubusercontent.com/kiki123124/x2o/main/apps/desktop/skill/SKILL.md -o ~/.openclaw/skills/x2o/SKILL.md
+curl -sL https://raw.githubusercontent.com/kiki123124/x2o/main/apps/desktop/skill/scripts/x2o.ts -o ~/.openclaw/skills/x2o/scripts/x2o.ts
+```
+
 **直接运行（不安装 skill）：**
 
 ```bash
