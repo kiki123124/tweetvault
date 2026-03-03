@@ -166,7 +166,7 @@ export default function App() {
         {/* Drag region + logo (pt-7 for macOS traffic lights) */}
         <div class="pt-7 h-16 flex items-center px-5 gap-2 shrink-0" data-tauri-drag-region>
           <img src="/logo.jpg" class="w-6 h-6 rounded-lg" />
-          <span class="text-[12px] font-semibold tracking-tight">TweetVault</span>
+          <span class="text-[12px] font-semibold tracking-tight">x2o</span>
         </div>
 
         {/* Nav */}
@@ -221,7 +221,7 @@ export default function App() {
           <Show when={page() === "home"}>
             <div class="animate-fade-in-scale flex flex-col items-center justify-center h-full -mt-8">
               <img src="/logo.jpg" class="animate-bounce-in w-14 h-14 rounded-2xl mb-5" />
-              <h1 class="text-[24px] font-semibold mb-2 tracking-tight">TweetVault</h1>
+              <h1 class="text-[24px] font-semibold mb-2 tracking-tight">x2o</h1>
               <p class="text-[13px] text-center mb-8 max-w-[320px] leading-relaxed"
                 style={{ color: "var(--text-secondary)" }}>
                 X 书签导出 → AI 智能分类 → Obsidian 知识库

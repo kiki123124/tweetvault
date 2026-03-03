@@ -1,5 +1,5 @@
 /**
- * TweetVault sync pipeline — runs entirely in the Tauri webview.
+ * x2o sync pipeline — runs entirely in the Tauri webview.
  * No Node.js dependency. Uses Tauri plugins for file I/O and CORS-free HTTP.
  */
 
@@ -725,11 +725,11 @@ async function generateVault(
   // Root index
   const rootLines: string[] = [];
   rootLines.push("---");
-  rootLines.push(`title: "TweetVault"`);
+  rootLines.push(`title: "x2o"`);
   rootLines.push(`type: vault-index`);
   rootLines.push("---");
   rootLines.push("");
-  rootLines.push("# TweetVault");
+  rootLines.push("# x2o");
   rootLines.push("");
   const total = items.length;
   rootLines.push(`${total} bookmarks across ${byCategory.size} categories.`);

@@ -27,12 +27,22 @@
 
 > ⚠️ 首次打开可能提示"无法验证开发者"，前往 **系统设置 → 隐私与安全性 → 仍要打开**
 
-### CLI（通过 Claude Code Skill）
+### CLI Skill（Claude Code 用户）
 
-如果你用 Claude Code，直接说"帮我导出 X 书签"即可触发。或手动运行：
+**安装：**
 
 ```bash
-npx tsx ~/.claude/skills/tweetvault/scripts/tweetvault.ts \
+# 复制 skill 到 Claude Code skills 目录
+mkdir -p ~/.claude/skills/x2o
+cp -r apps/desktop/skill/* ~/.claude/skills/x2o/
+```
+
+安装后在 Claude Code 里说"帮我导出 X 书签"即可触发。
+
+**手动运行：**
+
+```bash
+npx tsx ~/.claude/skills/x2o/scripts/tweetvault.ts \
   --cookie "<你的 X Cookie>" \
   --provider deepseek \
   --api-key "sk-..." \
