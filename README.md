@@ -29,40 +29,18 @@
 
 ### CLI Skill（Claude Code / OpenClaw 用户）
 
-**一键安装：**
+**推荐安装方式：**
 
 ```bash
-# 克隆仓库并复制 skill
-git clone https://github.com/kiki123124/x2o.git /tmp/x2o
-mkdir -p ~/.claude/skills/x2o
-cp -r /tmp/x2o/apps/desktop/skill/* ~/.claude/skills/x2o/
-rm -rf /tmp/x2o
+npx skills add kiki123124/x2o
 ```
 
-**或手动安装：**
-
-```bash
-# 1. 下载 skill 文件
-mkdir -p ~/.claude/skills/x2o/scripts
-curl -sL https://raw.githubusercontent.com/kiki123124/x2o/main/apps/desktop/skill/SKILL.md -o ~/.claude/skills/x2o/SKILL.md
-curl -sL https://raw.githubusercontent.com/kiki123124/x2o/main/apps/desktop/skill/scripts/x2o.ts -o ~/.claude/skills/x2o/scripts/x2o.ts
-```
-
-安装后重启 Claude Code，说"帮我导出 X 书签"即可触发。
-
-**OpenClaw 用户：**
-
-```bash
-# OpenClaw skills 目录
-mkdir -p ~/.openclaw/skills/x2o/scripts
-curl -sL https://raw.githubusercontent.com/kiki123124/x2o/main/apps/desktop/skill/SKILL.md -o ~/.openclaw/skills/x2o/SKILL.md
-curl -sL https://raw.githubusercontent.com/kiki123124/x2o/main/apps/desktop/skill/scripts/x2o.ts -o ~/.openclaw/skills/x2o/scripts/x2o.ts
-```
+安装后重启 Claude Code / OpenClaw，说"帮我导出 X 书签"即可触发。
 
 **直接运行（不安装 skill）：**
 
 ```bash
-npx tsx ~/.claude/skills/x2o/scripts/x2o.ts \
+npx tsx https://raw.githubusercontent.com/kiki123124/x2o/main/scripts/x2o.ts \
   --cookie "<你的 X Cookie>" \
   --provider deepseek \
   --api-key "sk-..." \
