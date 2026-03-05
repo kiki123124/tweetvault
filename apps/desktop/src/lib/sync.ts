@@ -382,9 +382,13 @@ function parseBookmarkResponse(json: any): { items: Bookmark[]; nextCursor?: str
         altText: m.ext_alt_text ?? undefined,
       }));
 
+      // Prefer note_tweet full text for X Notes (long-form tweets)
+      const noteText = result?.note_tweet?.note_tweet_results?.result?.text;
+      const fullText = noteText ?? legacy.full_text ?? "";
+
       items.push({
         id: restId,
-        text: legacy.full_text ?? "",
+        text: fullText,
         authorName: name,
         authorHandle: screenName,
         createdAt: legacy.created_at ?? "",

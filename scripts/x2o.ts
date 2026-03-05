@@ -208,9 +208,13 @@ function parseBookmarkResponse(json: any): { items: Bookmark[]; nextCursor?: str
         altText: m.ext_alt_text ?? undefined,
       }));
 
+      // Prefer note_tweet full text for X Notes (long-form tweets)
+      const noteText = result?.note_tweet?.note_tweet_results?.result?.text;
+      const fullText = noteText ?? legacy.full_text ?? "";
+
       items.push({
         id: restId,
-        text: legacy.full_text ?? "",
+        text: fullText,
         authorName: name,
         authorHandle: screenName,
         createdAt: legacy.created_at ?? "",
@@ -223,6 +227,48 @@ function parseBookmarkResponse(json: any): { items: Bookmark[]; nextCursor?: str
     }
   }
   return { items, nextCursor };
+}
+
+// ─── t.co URL Resolution ─────────────────────────────────────────
+
+async function resolveTcoUrl(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, { method: "HEAD", redirect: "manual" });
+    const location = res.headers.get("location");
+    return location ?? url;
+  } catch {
+    return url;
+  }
+}
+
+async function resolveTcoUrls(bookmarks: Bookmark[]): Promise<void> {
+  // Collect all unique t.co URLs
+  const tcoRegex = /https?:\/\/t\.co\/\w+/g;
+  const urlSet = new Set<string>();
+  for (const b of bookmarks) {
+    for (const match of b.text.matchAll(tcoRegex)) {
+      urlSet.add(match[0]);
+    }
+  }
+  if (urlSet.size === 0) return;
+  console.log(`🔗 解析 ${urlSet.size} 个 t.co 短链接...`);
+
+  // Resolve in batches of 10
+  const urlMap = new Map<string, string>();
+  const urls = [...urlSet];
+  for (let i = 0; i < urls.length; i += 10) {
+    const batch = urls.slice(i, i + 10);
+    const resolved = await Promise.all(batch.map(async (u) => [u, await resolveTcoUrl(u)] as const));
+    for (const [short, real] of resolved) {
+      if (real !== short) urlMap.set(short, real);
+    }
+  }
+
+  // Replace in bookmark text
+  for (const b of bookmarks) {
+    b.text = b.text.replace(tcoRegex, (match) => urlMap.get(match) ?? match);
+  }
+  console.log(`✅ 已解析 ${urlMap.size}/${urlSet.size} 个短链接`);
 }
 
 // ─── AI Classification ──────────────────────────────────────────
@@ -410,6 +456,9 @@ async function main() {
   }
 
   console.log(`\n✅ 共 ${bookmarks.length} 条书签\n`);
+
+  // Resolve t.co short URLs to real URLs
+  await resolveTcoUrls(bookmarks);
 
   if (FETCH_ONLY) {
     const outFile = path.join(OUTPUT_DIR, "bookmarks.json");

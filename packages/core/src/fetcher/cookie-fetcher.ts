@@ -170,9 +170,15 @@ export class CookieFetcher implements BookmarkFetcher {
     const screenName = String(userCore?.screen_name ?? userLegacy?.screen_name ?? "");
     const name = String(userCore?.name ?? userLegacy?.name ?? "");
 
+    // Prefer note_tweet full text for X Notes (long-form tweets)
+    const noteText = getNestedValue(tweet, [
+      "note_tweet", "note_tweet_results", "result", "text",
+    ]) as string | undefined;
+    const fullText = noteText ?? String(legacy.full_text ?? "");
+
     return {
       id: restId,
-      text: String(legacy.full_text ?? ""),
+      text: fullText,
       authorName: name,
       authorHandle: screenName,
       createdAt: String(legacy.created_at ?? ""),

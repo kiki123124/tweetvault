@@ -341,13 +341,25 @@ fn parse_bookmark_entries(json: &Value) -> (Vec<BookmarkItem>, Option<String>) {
             })
             .unwrap_or_default();
 
+        // Prefer note_tweet full text for X Notes (long-form tweets)
+        let note_text = get_path(
+            &result,
+            &["note_tweet", "note_tweet_results", "result", "text"],
+        )
+        .and_then(|v| v.as_str());
+
+        let full_text = note_text
+            .unwrap_or_else(|| {
+                legacy
+                    .get("full_text")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+            })
+            .to_string();
+
         let item = BookmarkItem {
             id: rest_id.clone(),
-            text: legacy
-                .get("full_text")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_string(),
+            text: full_text,
             author_name,
             author_handle: screen_name.clone(),
             created_at: legacy
@@ -380,6 +392,51 @@ fn parse_bookmark_entries(json: &Value) -> (Vec<BookmarkItem>, Option<String>) {
     }
 
     (out, next_cursor)
+}
+
+/// Resolve t.co short URLs to real URLs by following redirects.
+async fn resolve_tco_urls(bookmarks: &mut Vec<BookmarkItem>) {
+    use regex::Regex;
+    use std::collections::HashSet;
+
+    let tco_re = Regex::new(r"https?://t\.co/\w+").unwrap();
+
+    // Collect unique t.co URLs
+    let mut urls: HashSet<String> = HashSet::new();
+    for b in bookmarks.iter() {
+        for m in tco_re.find_iter(&b.text) {
+            urls.insert(m.as_str().to_string());
+        }
+    }
+    if urls.is_empty() {
+        return;
+    }
+
+    // Resolve with no-redirect client
+    let client = reqwest::Client::builder()
+        .redirect(reqwest::redirect::Policy::none())
+        .build()
+        .unwrap_or_else(|_| reqwest::Client::new());
+
+    let mut url_map: HashMap<String, String> = HashMap::new();
+    for url in &urls {
+        if let Ok(res) = client.head(url).send().await {
+            if let Some(loc) = res.headers().get("location") {
+                if let Ok(real) = loc.to_str() {
+                    url_map.insert(url.clone(), real.to_string());
+                }
+            }
+        }
+    }
+
+    // Replace in bookmark text
+    for b in bookmarks.iter_mut() {
+        let new_text = tco_re.replace_all(&b.text, |caps: &regex::Captures| {
+            let matched = caps.get(0).unwrap().as_str();
+            url_map.get(matched).cloned().unwrap_or_else(|| matched.to_string())
+        });
+        b.text = new_text.into_owned();
+    }
 }
 
 #[command]
@@ -473,6 +530,10 @@ async fn fetch_bookmarks_rust(cookie: String, limit: usize) -> Result<Vec<Bookma
     if collected.len() > limit {
         collected.truncate(limit);
     }
+
+    // Resolve t.co short URLs to real URLs
+    resolve_tco_urls(&mut collected).await;
+
     Ok(collected)
 }
 
